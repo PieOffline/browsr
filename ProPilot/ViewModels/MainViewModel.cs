@@ -13,6 +13,10 @@ public class MainViewModel : ViewModelBase
     private ViewModelBase? _currentView;
     private bool _showOnboarding;
     private string _currentViewTitle = "Chat";
+    private bool _isChatActive;
+    private bool _isAssignmentsActive;
+    private bool _isDocumentsActive;
+    private bool _isSettingsActive;
 
     public ViewModelBase? CurrentView
     {
@@ -31,6 +35,11 @@ public class MainViewModel : ViewModelBase
         get => _currentViewTitle;
         set => SetProperty(ref _currentViewTitle, value);
     }
+
+    public bool IsChatActive { get => _isChatActive; set => SetProperty(ref _isChatActive, value); }
+    public bool IsAssignmentsActive { get => _isAssignmentsActive; set => SetProperty(ref _isAssignmentsActive, value); }
+    public bool IsDocumentsActive { get => _isDocumentsActive; set => SetProperty(ref _isDocumentsActive, value); }
+    public bool IsSettingsActive { get => _isSettingsActive; set => SetProperty(ref _isSettingsActive, value); }
 
     public ChatViewModel ChatVm { get; }
     public AssignmentsViewModel AssignmentsVm { get; }
@@ -55,16 +64,17 @@ public class MainViewModel : ViewModelBase
         SettingsVm = new SettingsViewModel(_db, _gemini);
         OnboardingVm = new OnboardingViewModel(_db, _gemini);
 
-        NavigateChatCommand = new RelayCommand(_ => CurrentView = ChatVm);
-        NavigateAssignmentsCommand = new RelayCommand(_ => CurrentView = AssignmentsVm);
-        NavigateDocumentsCommand = new RelayCommand(_ => CurrentView = DocumentsVm);
-        NavigateSettingsCommand = new RelayCommand(_ => CurrentView = SettingsVm);
+        NavigateChatCommand = new RelayCommand(_ => { CurrentView = ChatVm; SetActiveTab(nameof(IsChatActive)); });
+        NavigateAssignmentsCommand = new RelayCommand(_ => { CurrentView = AssignmentsVm; SetActiveTab(nameof(IsAssignmentsActive)); });
+        NavigateDocumentsCommand = new RelayCommand(_ => { CurrentView = DocumentsVm; SetActiveTab(nameof(IsDocumentsActive)); });
+        NavigateSettingsCommand = new RelayCommand(_ => { CurrentView = SettingsVm; SetActiveTab(nameof(IsSettingsActive)); });
 
         OnboardingVm.OnboardingCompleted += () =>
         {
             ShowOnboarding = false;
             LoadApiKey();
             CurrentView = ChatVm;
+            SetActiveTab(nameof(IsChatActive));
         };
 
         // Check if profile exists
@@ -78,7 +88,16 @@ public class MainViewModel : ViewModelBase
             ShowOnboarding = false;
             _gemini.SetApiKey(profile.GeminiApiKey);
             CurrentView = ChatVm;
+            SetActiveTab(nameof(IsChatActive));
         }
+    }
+
+    private void SetActiveTab(string activeProperty)
+    {
+        IsChatActive = activeProperty == nameof(IsChatActive);
+        IsAssignmentsActive = activeProperty == nameof(IsAssignmentsActive);
+        IsDocumentsActive = activeProperty == nameof(IsDocumentsActive);
+        IsSettingsActive = activeProperty == nameof(IsSettingsActive);
     }
 
     private void LoadApiKey()

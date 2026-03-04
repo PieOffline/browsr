@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:ProPilot.Converters"
-             Background="{DynamicResource MaterialDesignPaper}">
+             Background="{StaticResource BaseBgBrush}">
 
     <UserControl.Resources>
         <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
@@ -11,9 +11,11 @@
 
     <Grid HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="500">
         <!-- Step 0: Welcome -->
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <StackPanel.Style>
-                <Style TargetType="StackPanel">
+        <Border CornerRadius="24" Padding="40,32"
+                Background="{StaticResource PanelBgBrush}"
+                BorderBrush="{StaticResource AccentGradientHorizontal}" BorderThickness="1">
+            <Border.Style>
+                <Style TargetType="Border">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding CurrentStep}" Value="0">
@@ -21,26 +23,36 @@
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </StackPanel.Style>
+            </Border.Style>
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <materialDesign:PackIcon Kind="RobotHappy" Width="80" Height="80"
+                                          HorizontalAlignment="Center"
+                                          Foreground="{StaticResource AccentGradientHorizontal}" />
+                <TextBlock Text="Welcome to ProPilot 🚀" FontSize="32" FontWeight="Bold"
+                           HorizontalAlignment="Center" Margin="0,16,0,0"
+                           Foreground="White" />
+                <TextBlock Text="Your smart study co-pilot." FontSize="16"
+                           HorizontalAlignment="Center" Margin="0,8,0,32"
+                           Foreground="{StaticResource MutedTextBrush}" />
+                <Button Command="{Binding NextStepCommand}" HorizontalAlignment="Center" Cursor="Hand">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{StaticResource AccentGradientHorizontal}"
+                                    CornerRadius="999" Padding="32,10">
+                                <TextBlock Text="Get Started" Foreground="White" FontSize="16" FontWeight="Medium" />
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </StackPanel>
+        </Border>
 
-            <materialDesign:PackIcon Kind="RobotHappy" Width="80" Height="80"
-                                      HorizontalAlignment="Center"
-                                      Foreground="{DynamicResource PrimaryHueMidBrush}" />
-            <TextBlock Text="ProPilot" FontSize="36" FontWeight="Bold"
-                       HorizontalAlignment="Center" Margin="0,16,0,0"
-                       Foreground="{DynamicResource PrimaryHueMidBrush}" />
-            <TextBlock Text="Your personal AI study assistant" FontSize="16"
-                       HorizontalAlignment="Center" Margin="0,8,0,32"
-                       Foreground="{DynamicResource MaterialDesignBodyLight}" />
-            <Button Content="Get Started" 
-                    Command="{Binding NextStepCommand}" HorizontalAlignment="Center"
-                    Padding="32,8" FontSize="16" />
-        </StackPanel>
-
-        <!-- Step 1: Who are you? -->
-        <StackPanel>
-            <StackPanel.Style>
-                <Style TargetType="StackPanel">
+        <!-- Step 1: Your Details -->
+        <Border CornerRadius="24" Padding="40,32"
+                Background="{StaticResource PanelBgBrush}"
+                BorderBrush="{StaticResource AccentGradientHorizontal}" BorderThickness="1">
+            <Border.Style>
+                <Style TargetType="Border">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding CurrentStep}" Value="1">
@@ -48,35 +60,54 @@
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </StackPanel.Style>
+            </Border.Style>
+            <StackPanel>
+                <TextBlock Text="Let's get to know you" FontSize="28" FontWeight="Bold"
+                           HorizontalAlignment="Center" Margin="0,0,0,24" Foreground="White" />
 
-            <TextBlock Text="Who are you?" FontSize="28" FontWeight="Bold"
-                       HorizontalAlignment="Center" Margin="0,0,0,24" />
+                <TextBox materialDesign:HintAssist.Hint="First Name"
+                         Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0,0,0,16" FontSize="14" Foreground="White" />
 
-            <TextBox materialDesign:HintAssist.Hint="First Name"
-                     Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}"
-                     Margin="0,0,0,16" FontSize="14" />
+                <TextBox materialDesign:HintAssist.Hint="School Email Address"
+                         Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0,0,0,16" FontSize="14" Foreground="White" />
 
-            <TextBox materialDesign:HintAssist.Hint="School Email Address"
-                     Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
-                     Margin="0,0,0,16" FontSize="14" />
+                <TextBox materialDesign:HintAssist.Hint="School Name"
+                         Text="{Binding School, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0,0,0,24" FontSize="14" Foreground="White" />
 
-            <TextBox materialDesign:HintAssist.Hint="School Name"
-                     Text="{Binding School, UpdateSourceTrigger=PropertyChanged}"
-                     Margin="0,0,0,24" FontSize="14" />
-
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Content="Back" 
-                        Command="{Binding PreviousStepCommand}" Margin="0,0,16,0" Padding="24,8" />
-                <Button Content="Next" 
-                        Command="{Binding NextStepCommand}" Padding="24,8" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Command="{Binding PreviousStepCommand}" Margin="0,0,12,0" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{StaticResource SurfaceBgBrush}"
+                                        CornerRadius="999" Padding="24,8" BorderBrush="#33FFFFFF" BorderThickness="1">
+                                    <TextBlock Text="Back" Foreground="White" FontSize="14" />
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <Button Command="{Binding NextStepCommand}" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{StaticResource AccentGradientHorizontal}"
+                                        CornerRadius="999" Padding="24,8">
+                                    <TextBlock Text="Next" Foreground="White" FontSize="14" FontWeight="Medium" />
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
+        </Border>
 
         <!-- Step 2: API Key -->
-        <StackPanel>
-            <StackPanel.Style>
-                <Style TargetType="StackPanel">
+        <Border CornerRadius="24" Padding="40,32"
+                Background="{StaticResource PanelBgBrush}"
+                BorderBrush="{StaticResource AccentGradientHorizontal}" BorderThickness="1">
+            <Border.Style>
+                <Style TargetType="Border">
                     <Setter Property="Visibility" Value="Collapsed" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding CurrentStep}" Value="2">
@@ -84,38 +115,68 @@
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </StackPanel.Style>
+            </Border.Style>
+            <StackPanel>
+                <TextBlock Text="Connect your AI" FontSize="28" FontWeight="Bold"
+                           HorizontalAlignment="Center" Margin="0,0,0,8" Foreground="White" />
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,24"
+                           Foreground="{StaticResource MutedTextBrush}" FontSize="13">
+                    ProPilot uses Google Gemini AI. Get a free API key at
+                    <Hyperlink NavigateUri="https://aistudio.google.com/apikey"
+                               RequestNavigate="Hyperlink_RequestNavigate"
+                               Foreground="{StaticResource AccentGradientHorizontal}">
+                        aistudio.google.com/apikey
+                    </Hyperlink>
+                </TextBlock>
 
-            <TextBlock Text="API Key Setup" FontSize="28" FontWeight="Bold"
-                       HorizontalAlignment="Center" Margin="0,0,0,8" />
-            <TextBlock TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,24"
-                       Foreground="{DynamicResource MaterialDesignBodyLight}" FontSize="13">
-                ProPilot uses Google Gemini AI. Get a free API key at
-                <Hyperlink NavigateUri="https://aistudio.google.com/apikey"
-                           RequestNavigate="Hyperlink_RequestNavigate"
-                           Foreground="{DynamicResource PrimaryHueMidBrush}">
-                    aistudio.google.com/apikey
-                </Hyperlink>
-            </TextBlock>
+                <TextBox materialDesign:HintAssist.Hint="Gemini API Key"
+                         Text="{Binding ApiKey, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="0,0,0,12" FontSize="14" Foreground="White" />
 
-            <TextBox materialDesign:HintAssist.Hint="Gemini API Key"
-                     Text="{Binding ApiKey, UpdateSourceTrigger=PropertyChanged}"
-                     Margin="0,0,0,12" FontSize="14" />
+                <Button Command="{Binding TestKeyCommand}" HorizontalAlignment="Center"
+                        Margin="0,0,0,8" Cursor="Hand"
+                        IsEnabled="{Binding IsTesting, Converter={StaticResource InverseBoolConverter}}">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="TestBd" Background="{StaticResource SurfaceBgBrush}"
+                                    CornerRadius="999" Padding="24,8" BorderBrush="#33FFFFFF" BorderThickness="1">
+                                <TextBlock Text="Test Connection" Foreground="White" FontSize="13" />
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsEnabled" Value="False">
+                                    <Setter TargetName="TestBd" Property="Opacity" Value="0.5" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
 
-            <Button Content="Test Key" 
-                    Command="{Binding TestKeyCommand}" HorizontalAlignment="Center"
-                    Margin="0,0,0,8" Padding="24,8"
-                    IsEnabled="{Binding IsTesting, Converter={StaticResource InverseBoolConverter}}" />
+                <TextBlock Text="{Binding TestResult}" HorizontalAlignment="Center"
+                           Margin="0,0,0,24" FontSize="13" Foreground="{StaticResource MutedTextBrush}" />
 
-            <TextBlock Text="{Binding TestResult}" HorizontalAlignment="Center"
-                       Margin="0,0,0,24" FontSize="13" />
-
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Content="Back" 
-                        Command="{Binding PreviousStepCommand}" Margin="0,0,16,0" Padding="24,8" />
-                <Button Content="Finish Setup" 
-                        Command="{Binding FinishCommand}" Padding="24,8" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Command="{Binding PreviousStepCommand}" Margin="0,0,12,0" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{StaticResource SurfaceBgBrush}"
+                                        CornerRadius="999" Padding="24,8" BorderBrush="#33FFFFFF" BorderThickness="1">
+                                    <TextBlock Text="Back" Foreground="White" FontSize="14" />
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <Button Command="{Binding FinishCommand}" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{StaticResource AccentGradientHorizontal}"
+                                        CornerRadius="999" Padding="24,8">
+                                    <TextBlock Text="Let's go! 🎉" Foreground="White" FontSize="14" FontWeight="Medium" />
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
             </StackPanel>
-        </StackPanel>
+        </Border>
     </Grid>
 </UserControl>
