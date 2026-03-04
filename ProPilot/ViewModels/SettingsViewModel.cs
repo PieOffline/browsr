@@ -98,12 +98,17 @@ public class SettingsViewModel : ViewModelBase
 
     private void OpenDataFolder()
     {
-        try
+        if (Directory.Exists(DataFolderPath))
         {
-            if (Directory.Exists(DataFolderPath))
+            try
+            {
                 Process.Start(new ProcessStartInfo(DataFolderPath) { UseShellExecute = true });
+            }
+            catch (Exception)
+            {
+                SaveStatus = "⚠️ Could not open data folder.";
+            }
         }
-        catch { }
     }
 
     public void ResetAllData()
