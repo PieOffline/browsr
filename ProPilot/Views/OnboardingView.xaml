@@ -1,0 +1,125 @@
+<UserControl x:Class="ProPilot.Views.OnboardingView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:ProPilot.Converters"
+             Background="{DynamicResource MaterialDesignPaper}">
+
+    <UserControl.Resources>
+        <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+    </UserControl.Resources>
+
+    <Grid HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="500">
+        <!-- Step 0: Welcome -->
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentStep}" Value="0">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+
+            <materialDesign:PackIcon Kind="RobotHappy" Width="80" Height="80"
+                                      HorizontalAlignment="Center"
+                                      Foreground="{DynamicResource PrimaryHueMidBrush}" />
+            <TextBlock Text="ProPilot" FontSize="36" FontWeight="Bold"
+                       HorizontalAlignment="Center" Margin="0,16,0,0"
+                       Foreground="{DynamicResource PrimaryHueMidBrush}" />
+            <TextBlock Text="Your personal AI study assistant" FontSize="16"
+                       HorizontalAlignment="Center" Margin="0,8,0,32"
+                       Foreground="{DynamicResource MaterialDesignBodyLight}" />
+            <Button Content="Get Started" Style="{StaticResource MaterialDesignRaisedButton}"
+                    Command="{Binding NextStepCommand}" HorizontalAlignment="Center"
+                    Padding="32,8" FontSize="16" />
+        </StackPanel>
+
+        <!-- Step 1: Who are you? -->
+        <StackPanel>
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentStep}" Value="1">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+
+            <TextBlock Text="Who are you?" FontSize="28" FontWeight="Bold"
+                       HorizontalAlignment="Center" Margin="0,0,0,24" />
+
+            <TextBox materialDesign:HintAssist.Hint="First Name"
+                     Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     Margin="0,0,0,16" FontSize="14" />
+
+            <TextBox materialDesign:HintAssist.Hint="School Email Address"
+                     Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     Margin="0,0,0,16" FontSize="14" />
+
+            <TextBox materialDesign:HintAssist.Hint="School Name"
+                     Text="{Binding School, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     Margin="0,0,0,24" FontSize="14" />
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Back" Style="{StaticResource MaterialDesignOutlinedButton}"
+                        Command="{Binding PreviousStepCommand}" Margin="0,0,16,0" Padding="24,8" />
+                <Button Content="Next" Style="{StaticResource MaterialDesignRaisedButton}"
+                        Command="{Binding NextStepCommand}" Padding="24,8" />
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Step 2: API Key -->
+        <StackPanel>
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding CurrentStep}" Value="2">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+
+            <TextBlock Text="API Key Setup" FontSize="28" FontWeight="Bold"
+                       HorizontalAlignment="Center" Margin="0,0,0,8" />
+            <TextBlock TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,24"
+                       Foreground="{DynamicResource MaterialDesignBodyLight}" FontSize="13">
+                ProPilot uses Google Gemini AI. Get a free API key at
+                <Hyperlink NavigateUri="https://aistudio.google.com/apikey"
+                           RequestNavigate="Hyperlink_RequestNavigate"
+                           Foreground="{DynamicResource PrimaryHueMidBrush}">
+                    aistudio.google.com/apikey
+                </Hyperlink>
+            </TextBlock>
+
+            <TextBox materialDesign:HintAssist.Hint="Gemini API Key"
+                     Text="{Binding ApiKey, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     Margin="0,0,0,12" FontSize="14" />
+
+            <Button Content="Test Key" Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Command="{Binding TestKeyCommand}" HorizontalAlignment="Center"
+                    Margin="0,0,0,8" Padding="24,8"
+                    IsEnabled="{Binding IsTesting, Converter={StaticResource InverseBoolConverter}}" />
+
+            <TextBlock Text="{Binding TestResult}" HorizontalAlignment="Center"
+                       Margin="0,0,0,24" FontSize="13" />
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Content="Back" Style="{StaticResource MaterialDesignOutlinedButton}"
+                        Command="{Binding PreviousStepCommand}" Margin="0,0,16,0" Padding="24,8" />
+                <Button Content="Finish Setup" Style="{StaticResource MaterialDesignRaisedButton}"
+                        Command="{Binding FinishCommand}" Padding="24,8" />
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>

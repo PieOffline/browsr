@@ -1,0 +1,156 @@
+<UserControl x:Class="ProPilot.Views.ChatView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:ProPilot.Converters">
+
+    <UserControl.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVis" />
+        <converters:NullToVisibilityConverter x:Key="NullToVis" />
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Session list panel -->
+        <Border Grid.Column="0" Width="240" Background="{DynamicResource MaterialDesignCardBackground}"
+                BorderThickness="0,0,1,0" BorderBrush="{DynamicResource MaterialDesignDivider}"
+                Visibility="{Binding ShowSessionList, Converter={StaticResource BoolToVis}}">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="12,12,12,8">
+                    <Button Style="{StaticResource MaterialDesignIconButton}"
+                            Command="{Binding NewSessionCommand}" ToolTip="New Chat">
+                        <materialDesign:PackIcon Kind="Plus" />
+                    </Button>
+                    <TextBlock Text="Chat Sessions" VerticalAlignment="Center"
+                               FontWeight="Medium" Margin="8,0,0,0" />
+                </StackPanel>
+
+                <ListBox ItemsSource="{Binding Sessions}"
+                         SelectedItem="{Binding CurrentSession}"
+                         Margin="4,0,4,4"
+                         Background="Transparent"
+                         BorderThickness="0">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <DockPanel Margin="4,6">
+                                <Button DockPanel.Dock="Right"
+                                        Style="{StaticResource MaterialDesignIconButton}"
+                                        Command="{Binding DataContext.DeleteSessionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}"
+                                        Width="24" Height="24" Padding="0" ToolTip="Delete">
+                                    <materialDesign:PackIcon Kind="Delete" Width="16" Height="16" />
+                                </Button>
+                                <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis"
+                                           VerticalAlignment="Center" FontSize="13" />
+                            </DockPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </DockPanel>
+        </Border>
+
+        <!-- Chat area -->
+        <DockPanel Grid.Column="1">
+            <!-- Toggle session list button -->
+            <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="8,4,8,0">
+                <Button Style="{StaticResource MaterialDesignIconButton}"
+                        Command="{Binding ToggleSessionListCommand}" ToolTip="Toggle Sessions">
+                    <materialDesign:PackIcon Kind="Menu" />
+                </Button>
+            </StackPanel>
+
+            <!-- Input bar at bottom -->
+            <Border DockPanel.Dock="Bottom" Padding="12,8" Margin="8,0,8,8"
+                    CornerRadius="12" Background="{DynamicResource MaterialDesignCardBackground}">
+                <StackPanel>
+                    <!-- Context indicators -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                        <Border Visibility="{Binding SelectedAssignment, Converter={StaticResource NullToVis}}"
+                                Background="{DynamicResource PrimaryHueMidBrush}" CornerRadius="8"
+                                Padding="8,2" Margin="0,0,8,0">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Book" Width="14" Height="14" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding SelectedAssignment.Title}" FontSize="12"
+                                           VerticalAlignment="Center" Margin="4,0,4,0" />
+                                <Button Style="{StaticResource MaterialDesignIconButton}"
+                                        Command="{Binding ClearAssignmentCommand}"
+                                        Width="18" Height="18" Padding="0">
+                                    <materialDesign:PackIcon Kind="Close" Width="12" Height="12" />
+                                </Button>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Visibility="{Binding AttachedDocument, Converter={StaticResource NullToVis}}"
+                                Background="{DynamicResource SecondaryHueMidBrush}" CornerRadius="8"
+                                Padding="8,2">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Paperclip" Width="14" Height="14" VerticalAlignment="Center" />
+                                <TextBlock Text="{Binding AttachedDocument.Filename}" FontSize="12"
+                                           VerticalAlignment="Center" Margin="4,0,4,0" />
+                                <Button Style="{StaticResource MaterialDesignIconButton}"
+                                        Command="{Binding ClearAttachmentCommand}"
+                                        Width="18" Height="18" Padding="0">
+                                    <materialDesign:PackIcon Kind="Close" Width="12" Height="12" />
+                                </Button>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <DockPanel>
+                        <Button DockPanel.Dock="Right" Style="{StaticResource MaterialDesignIconButton}"
+                                Command="{Binding SendCommand}" ToolTip="Send" Margin="4,0,0,0">
+                            <materialDesign:PackIcon Kind="Send" />
+                        </Button>
+                        <TextBox Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}"
+                                 materialDesign:HintAssist.Hint="Type a message..."
+                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 AcceptsReturn="False" FontSize="14"
+                                 VerticalContentAlignment="Center"
+                                 KeyDown="MessageBox_KeyDown" x:Name="MessageBox" />
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Messages area -->
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="8,4,8,4"
+                          x:Name="MessagesScroller">
+                <ItemsControl ItemsSource="{Binding Messages}" Margin="0,0,0,8">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="4,4" Padding="12,8" CornerRadius="12" MaxWidth="600">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="{DynamicResource MaterialDesignCardBackground}" />
+                                        <Setter Property="HorizontalAlignment" Value="Left" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding Role}" Value="user">
+                                                <Setter Property="Background" Value="{DynamicResource PrimaryHueMidBrush}" />
+                                                <Setter Property="HorizontalAlignment" Value="Right" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <TextBlock Text="{Binding Content}" TextWrapping="Wrap" FontSize="14" />
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </DockPanel>
+
+        <!-- Empty state when no session selected -->
+        <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Visibility="{Binding CurrentSession, Converter={StaticResource NullToVis}, ConverterParameter=Invert}">
+            <materialDesign:PackIcon Kind="ChatOutline" Width="64" Height="64"
+                                      HorizontalAlignment="Center"
+                                      Foreground="{DynamicResource MaterialDesignBodyLight}" />
+            <TextBlock Text="Select a chat session or start a new one"
+                       FontSize="16" HorizontalAlignment="Center" Margin="0,12,0,0"
+                       Foreground="{DynamicResource MaterialDesignBodyLight}" />
+        </StackPanel>
+    </Grid>
+</UserControl>
