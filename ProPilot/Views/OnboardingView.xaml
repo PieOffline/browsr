@@ -32,7 +32,7 @@
             <TextBlock Text="Your personal AI study assistant" FontSize="16"
                        HorizontalAlignment="Center" Margin="0,8,0,32"
                        Foreground="{DynamicResource MaterialDesignBodyLight}" />
-            <Button Content="Get Started" Style="{StaticResource MaterialDesignRaisedButton}"
+            <Button Content="Get Started" 
                     Command="{Binding NextStepCommand}" HorizontalAlignment="Center"
                     Padding="32,8" FontSize="16" />
         </StackPanel>
@@ -55,23 +55,20 @@
 
             <TextBox materialDesign:HintAssist.Hint="First Name"
                      Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}"
-                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
                      Margin="0,0,0,16" FontSize="14" />
 
             <TextBox materialDesign:HintAssist.Hint="School Email Address"
                      Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
-                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
                      Margin="0,0,0,16" FontSize="14" />
 
             <TextBox materialDesign:HintAssist.Hint="School Name"
                      Text="{Binding School, UpdateSourceTrigger=PropertyChanged}"
-                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
                      Margin="0,0,0,24" FontSize="14" />
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Content="Back" Style="{StaticResource MaterialDesignOutlinedButton}"
+                <Button Content="Back" 
                         Command="{Binding PreviousStepCommand}" Margin="0,0,16,0" Padding="24,8" />
-                <Button Content="Next" Style="{StaticResource MaterialDesignRaisedButton}"
+                <Button Content="Next" 
                         Command="{Binding NextStepCommand}" Padding="24,8" />
             </StackPanel>
         </StackPanel>
@@ -103,10 +100,9 @@
 
             <TextBox materialDesign:HintAssist.Hint="Gemini API Key"
                      Text="{Binding ApiKey, UpdateSourceTrigger=PropertyChanged}"
-                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
                      Margin="0,0,0,12" FontSize="14" />
 
-            <Button Content="Test Key" Style="{StaticResource MaterialDesignOutlinedButton}"
+            <Button Content="Test Key" 
                     Command="{Binding TestKeyCommand}" HorizontalAlignment="Center"
                     Margin="0,0,0,8" Padding="24,8"
                     IsEnabled="{Binding IsTesting, Converter={StaticResource InverseBoolConverter}}" />
@@ -115,9 +111,9 @@
                        Margin="0,0,0,24" FontSize="13" />
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                <Button Content="Back" Style="{StaticResource MaterialDesignOutlinedButton}"
+                <Button Content="Back" 
                         Command="{Binding PreviousStepCommand}" Margin="0,0,16,0" Padding="24,8" />
-                <Button Content="Finish Setup" Style="{StaticResource MaterialDesignRaisedButton}"
+                <Button Content="Finish Setup" 
                         Command="{Binding FinishCommand}" Padding="24,8" />
             </StackPanel>
         </StackPanel>

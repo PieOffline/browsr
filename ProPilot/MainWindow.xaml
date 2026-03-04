@@ -74,23 +74,22 @@
                     </StackPanel>
 
                     <!-- Settings at bottom -->
-                    <Button DockPanel.Dock="Bottom" Style="{StaticResource MaterialDesignIconButton}"
-                            Command="{Binding NavigateSettingsCommand}" Margin="0,0,0,12"
+                    <Button DockPanel.Dock="Bottom" Command="{Binding NavigateSettingsCommand}" Margin="0,0,0,12"
                             ToolTip="Settings">
                         <materialDesign:PackIcon Kind="Cog" Width="24" Height="24" />
                     </Button>
 
                     <!-- Navigation buttons -->
                     <StackPanel VerticalAlignment="Top" Margin="0,8,0,0">
-                        <Button Style="{StaticResource MaterialDesignIconButton}"
+                        <Button 
                                 Command="{Binding NavigateChatCommand}" ToolTip="Chat" Margin="0,4">
                             <materialDesign:PackIcon Kind="Chat" Width="24" Height="24" />
                         </Button>
-                        <Button Style="{StaticResource MaterialDesignIconButton}"
+                        <Button 
                                 Command="{Binding NavigateAssignmentsCommand}" ToolTip="Assignments" Margin="0,4">
                             <materialDesign:PackIcon Kind="ClipboardText" Width="24" Height="24" />
                         </Button>
-                        <Button Style="{StaticResource MaterialDesignIconButton}"
+                        <Button 
                                 Command="{Binding NavigateDocumentsCommand}" ToolTip="Documents" Margin="0,4">
                             <materialDesign:PackIcon Kind="FileDocument" Width="24" Height="24" />
                         </Button>

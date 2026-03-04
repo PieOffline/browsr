@@ -16,18 +16,15 @@
                 <StackPanel>
                     <TextBox materialDesign:HintAssist.Hint="Name"
                              Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              Margin="0,0,0,12" />
                     <TextBox materialDesign:HintAssist.Hint="Email"
                              Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              Margin="0,0,0,12" />
                     <TextBox materialDesign:HintAssist.Hint="School"
                              Text="{Binding School, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              Margin="0,0,0,16" />
                     <StackPanel Orientation="Horizontal">
-                        <Button Content="Save Profile" Style="{StaticResource MaterialDesignRaisedButton}"
+                        <Button Content="Save Profile" 
                                 Command="{Binding SaveCommand}" Padding="16,8" />
                         <TextBlock Text="{Binding SaveStatus}" VerticalAlignment="Center"
                                    Margin="12,0,0,0" FontSize="13" />
@@ -44,13 +41,13 @@
                                Foreground="{DynamicResource MaterialDesignBodyLight}" />
                     <TextBox materialDesign:HintAssist.Hint="New API Key"
                              Text="{Binding ApiKey, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             
                              Margin="0,0,0,12" />
                     <StackPanel Orientation="Horizontal">
-                        <Button Content="Test Key" Style="{StaticResource MaterialDesignOutlinedButton}"
+                        <Button Content="Test Key" 
                                 Command="{Binding TestKeyCommand}" Padding="16,8"
                                 Margin="0,0,12,0" />
-                        <Button Content="Save" Style="{StaticResource MaterialDesignRaisedButton}"
+                        <Button Content="Save" 
                                 Command="{Binding SaveCommand}" Padding="16,8" />
                     </StackPanel>
                     <TextBlock Text="{Binding TestResult}" Margin="0,8,0,0" FontSize="13" />
@@ -67,7 +64,6 @@
                                TextWrapping="Wrap" FontSize="13" Margin="0,0,0,16"
                                Foreground="{DynamicResource MaterialDesignBodyLight}" />
                     <Button Content="Reset All Data"
-                            Style="{StaticResource MaterialDesignOutlinedButton}"
                             Foreground="IndianRed" BorderBrush="IndianRed"
                             Click="ResetButton_Click" Padding="16,8" />
                 </StackPanel>

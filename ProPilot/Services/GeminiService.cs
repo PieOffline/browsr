@@ -8,7 +8,7 @@ public class GeminiService
 {
     private readonly HttpClient _httpClient = new();
     private string _apiKey = string.Empty;
-    private const string BaseUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+    private const string BaseUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent";
 
     public void SetApiKey(string apiKey)
     {

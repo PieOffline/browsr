@@ -11,7 +11,7 @@
     <DockPanel Margin="16">
         <!-- Top bar -->
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,16">
-            <Button Style="{StaticResource MaterialDesignRaisedButton}"
+            <Button 
                     Click="UploadButton_Click" Padding="16,8">
                 <StackPanel Orientation="Horizontal">
                     <materialDesign:PackIcon Kind="Upload" VerticalAlignment="Center" />
@@ -51,12 +51,12 @@
                             <DockPanel>
                                 <!-- Actions on right -->
                                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Button Style="{StaticResource MaterialDesignIconButton}"
+                                    <Button 
                                             Command="{Binding DataContext.OpenCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}" ToolTip="Open">
                                         <materialDesign:PackIcon Kind="OpenInNew" />
                                     </Button>
-                                    <Button Style="{StaticResource MaterialDesignIconButton}"
+                                    <Button 
                                             Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                             CommandParameter="{Binding}" ToolTip="Delete">
                                         <materialDesign:PackIcon Kind="Delete" Foreground="IndianRed" />

@@ -27,7 +27,7 @@
 
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="16,12"
                         HorizontalAlignment="Right">
-                <Button Style="{StaticResource MaterialDesignRaisedButton}"
+                <Button 
                         Command="{Binding ShowNewFormCommand}" Padding="16,8">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" />
@@ -99,7 +99,7 @@
                       Visibility="{Binding ShowNewForm, Converter={StaticResource BoolToVis}}">
             <StackPanel MaxWidth="550" Margin="24,16" HorizontalAlignment="Center">
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                    <Button Style="{StaticResource MaterialDesignIconButton}"
+                    <Button 
                             Command="{Binding CloseFormCommand}">
                         <materialDesign:PackIcon Kind="ArrowLeft" />
                     </Button>
@@ -124,7 +124,7 @@
                                        Foreground="{DynamicResource MaterialDesignBodyLight}" />
                         </Border>
                         <StackPanel Orientation="Horizontal">
-                            <Button Content="Analyse" Style="{StaticResource MaterialDesignRaisedButton}"
+                            <Button Content="Analyse" 
                                     Command="{Binding AnalyseScreenshotCommand}" Padding="16,8" />
                             <TextBlock Text="{Binding AnalyseStatus}" VerticalAlignment="Center"
                                        Margin="12,0,0,0" FontSize="13" />
@@ -135,32 +135,32 @@
                 <!-- Form fields -->
                 <TextBox materialDesign:HintAssist.Hint="Title"
                          Text="{Binding NewTitle, UpdateSourceTrigger=PropertyChanged}"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         
                          Margin="0,0,0,12" />
                 <TextBox materialDesign:HintAssist.Hint="Subject"
                          Text="{Binding NewSubject, UpdateSourceTrigger=PropertyChanged}"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         
                          Margin="0,0,0,12" />
                 <TextBox materialDesign:HintAssist.Hint="Class Name"
                          Text="{Binding NewClassName, UpdateSourceTrigger=PropertyChanged}"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         
                          Margin="0,0,0,12" />
                 <TextBox materialDesign:HintAssist.Hint="Description"
                          Text="{Binding NewDescription, UpdateSourceTrigger=PropertyChanged}"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         
                          AcceptsReturn="True" TextWrapping="Wrap" MinHeight="80"
                          Margin="0,0,0,12" />
                 <TextBox materialDesign:HintAssist.Hint="Brief"
                          Text="{Binding NewBrief, UpdateSourceTrigger=PropertyChanged}"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         
                          AcceptsReturn="True" TextWrapping="Wrap" MinHeight="60"
                          Margin="0,0,0,12" />
                 <TextBox materialDesign:HintAssist.Hint="Deadline (e.g., 2025-03-15)"
                          Text="{Binding NewDeadline, UpdateSourceTrigger=PropertyChanged}"
-                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                         
                          Margin="0,0,0,24" />
 
-                <Button Content="Save Assignment" Style="{StaticResource MaterialDesignRaisedButton}"
+                <Button Content="Save Assignment" 
                         Command="{Binding SaveAssignmentCommand}"
                         HorizontalAlignment="Center" Padding="32,8" FontSize="14" />
             </StackPanel>
@@ -172,7 +172,7 @@
             <StackPanel MaxWidth="550" Margin="24,16" HorizontalAlignment="Center"
                         DataContext="{Binding}">
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                    <Button Style="{StaticResource MaterialDesignIconButton}"
+                    <Button 
                             Command="{Binding BackToListCommand}">
                         <materialDesign:PackIcon Kind="ArrowLeft" />
                     </Button>
@@ -204,7 +204,6 @@
                                    FontSize="13" Margin="0,0,0,16" />
 
                         <Button Content="Delete Assignment"
-                                Style="{StaticResource MaterialDesignOutlinedButton}"
                                 Command="{Binding DeleteAssignmentCommand}"
                                 Foreground="IndianRed" BorderBrush="IndianRed"
                                 HorizontalAlignment="Left" Padding="16,6" />

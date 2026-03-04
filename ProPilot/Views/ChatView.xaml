@@ -21,7 +21,7 @@
                 Visibility="{Binding ShowSessionList, Converter={StaticResource BoolToVis}}">
             <DockPanel>
                 <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="12,12,12,8">
-                    <Button Style="{StaticResource MaterialDesignIconButton}"
+                    <Button 
                             Command="{Binding NewSessionCommand}" ToolTip="New Chat">
                         <materialDesign:PackIcon Kind="Plus" />
                     </Button>
@@ -38,7 +38,6 @@
                         <DataTemplate>
                             <DockPanel Margin="4,6">
                                 <Button DockPanel.Dock="Right"
-                                        Style="{StaticResource MaterialDesignIconButton}"
                                         Command="{Binding DataContext.DeleteSessionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding}"
                                         Width="24" Height="24" Padding="0" ToolTip="Delete">
@@ -57,7 +56,7 @@
         <DockPanel Grid.Column="1">
             <!-- Toggle session list button -->
             <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="8,4,8,0">
-                <Button Style="{StaticResource MaterialDesignIconButton}"
+                <Button 
                         Command="{Binding ToggleSessionListCommand}" ToolTip="Toggle Sessions">
                     <materialDesign:PackIcon Kind="Menu" />
                 </Button>
@@ -76,7 +75,7 @@
                                 <materialDesign:PackIcon Kind="Book" Width="14" Height="14" VerticalAlignment="Center" />
                                 <TextBlock Text="{Binding SelectedAssignment.Title}" FontSize="12"
                                            VerticalAlignment="Center" Margin="4,0,4,0" />
-                                <Button Style="{StaticResource MaterialDesignIconButton}"
+                                <Button 
                                         Command="{Binding ClearAssignmentCommand}"
                                         Width="18" Height="18" Padding="0">
                                     <materialDesign:PackIcon Kind="Close" Width="12" Height="12" />
@@ -91,7 +90,7 @@
                                 <materialDesign:PackIcon Kind="Paperclip" Width="14" Height="14" VerticalAlignment="Center" />
                                 <TextBlock Text="{Binding AttachedDocument.Filename}" FontSize="12"
                                            VerticalAlignment="Center" Margin="4,0,4,0" />
-                                <Button Style="{StaticResource MaterialDesignIconButton}"
+                                <Button 
                                         Command="{Binding ClearAttachmentCommand}"
                                         Width="18" Height="18" Padding="0">
                                     <materialDesign:PackIcon Kind="Close" Width="12" Height="12" />
@@ -101,13 +100,13 @@
                     </StackPanel>
 
                     <DockPanel>
-                        <Button DockPanel.Dock="Right" Style="{StaticResource MaterialDesignIconButton}"
+                        <Button DockPanel.Dock="Right" 
                                 Command="{Binding SendCommand}" ToolTip="Send" Margin="4,0,0,0">
                             <materialDesign:PackIcon Kind="Send" />
                         </Button>
                         <TextBox Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}"
                                  materialDesign:HintAssist.Hint="Type a message..."
-                                 Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                 
                                  AcceptsReturn="False" FontSize="14"
                                  VerticalContentAlignment="Center"
                                  KeyDown="MessageBox_KeyDown" x:Name="MessageBox" />
