@@ -7,17 +7,18 @@ namespace ProPilot.Services;
 public class DatabaseService
 {
     private readonly string _connectionString;
+    private readonly string _dataFolder;
 
     public DatabaseService()
     {
-        var appData = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "ProPilot");
-        Directory.CreateDirectory(appData);
-        var dbPath = Path.Combine(appData, "propilot.db");
+        _dataFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data");
+        Directory.CreateDirectory(_dataFolder);
+        var dbPath = Path.Combine(_dataFolder, "propilot.db");
         _connectionString = $"Data Source={dbPath}";
         InitializeDatabase();
     }
+
+    public string DataFolder => _dataFolder;
 
     private void InitializeDatabase()
     {
@@ -36,7 +37,7 @@ public class DatabaseService
             );
 
             CREATE TABLE IF NOT EXISTS chat_sessions (
-                id INTEGER PRIMARY KEY,
+                id TEXT PRIMARY KEY,
                 title TEXT NOT NULL,
                 created_at TEXT NOT NULL,
                 updated_at TEXT NOT NULL
@@ -44,7 +45,7 @@ public class DatabaseService
 
             CREATE TABLE IF NOT EXISTS messages (
                 id INTEGER PRIMARY KEY,
-                session_id INTEGER NOT NULL,
+                session_id TEXT NOT NULL,
                 role TEXT NOT NULL,
                 content TEXT NOT NULL,
                 created_at TEXT NOT NULL,
@@ -130,7 +131,7 @@ public class DatabaseService
         {
             sessions.Add(new ChatSession
             {
-                Id = reader.GetInt64(0),
+                Id = reader.GetString(0),
                 Title = reader.GetString(1),
                 CreatedAt = reader.GetString(2),
                 UpdatedAt = reader.GetString(3)
@@ -139,22 +140,24 @@ public class DatabaseService
         return sessions;
     }
 
-    public long CreateChatSession(string title)
+    public string CreateChatSession(string title)
     {
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
+        var id = Guid.NewGuid().ToString();
         var now = DateTime.UtcNow.ToString("o");
         var cmd = connection.CreateCommand();
         cmd.CommandText = @"
-            INSERT INTO chat_sessions (title, created_at, updated_at)
-            VALUES (@title, @now, @now);
-            SELECT last_insert_rowid();";
+            INSERT INTO chat_sessions (id, title, created_at, updated_at)
+            VALUES (@id, @title, @now, @now)";
+        cmd.Parameters.AddWithValue("@id", id);
         cmd.Parameters.AddWithValue("@title", title);
         cmd.Parameters.AddWithValue("@now", now);
-        return (long)cmd.ExecuteScalar()!;
+        cmd.ExecuteNonQuery();
+        return id;
     }
 
-    public void UpdateChatSessionTitle(long id, string title)
+    public void UpdateChatSessionTitle(string id, string title)
     {
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
@@ -166,7 +169,7 @@ public class DatabaseService
         cmd.ExecuteNonQuery();
     }
 
-    public void DeleteChatSession(long id)
+    public void DeleteChatSession(string id)
     {
         using var connection = new SqliteConnection(_connectionString);
         connection.Open();
@@ -183,7 +186,7 @@ public class DatabaseService
 
     // ── Messages ─────────────────────────────────────────────
 
-    public List<Message> GetMessages(long sessionId)
+    public List<Message> GetMessages(string sessionId)
     {
         var messages = new List<Message>();
         using var connection = new SqliteConnection(_connectionString);
@@ -197,7 +200,7 @@ public class DatabaseService
             messages.Add(new Message
             {
                 Id = reader.GetInt64(0),
-                SessionId = reader.GetInt64(1),
+                SessionId = reader.GetString(1),
                 Role = reader.GetString(2),
                 Content = reader.GetString(3),
                 CreatedAt = reader.GetString(4)
