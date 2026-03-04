@@ -2,23 +2,35 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:converters="clr-namespace:ProPilot.Converters">
+             xmlns:converters="clr-namespace:ProPilot.Converters"
+             Background="{StaticResource BaseBgBrush}">
 
     <UserControl.Resources>
         <converters:BoolToVisibilityConverter x:Key="BoolToVis" />
     </UserControl.Resources>
 
-    <DockPanel Margin="16">
+    <DockPanel Margin="20,16">
         <!-- Top bar -->
-        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,16">
-            <Button 
-                    Click="UploadButton_Click" Padding="16,8">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:PackIcon Kind="Upload" VerticalAlignment="Center" />
-                    <TextBlock Text="Upload Document" Margin="8,0,0,0" />
-                </StackPanel>
+        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+            <TextBlock Text="Documents" FontSize="22" FontWeight="Bold" Foreground="White"
+                       VerticalAlignment="Center" />
+            <Button HorizontalAlignment="Right" DockPanel.Dock="Right"
+                    Click="UploadButton_Click" Cursor="Hand">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{StaticResource AccentGradientHorizontal}"
+                                CornerRadius="999" Padding="16,8" Cursor="Hand">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Upload" VerticalAlignment="Center"
+                                                          Width="16" Height="16" Foreground="White" />
+                                <TextBlock Text="Upload Document" Margin="6,0,0,0" Foreground="White"
+                                           FontWeight="Medium" FontSize="13" />
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
             </Button>
-        </StackPanel>
+        </DockPanel>
 
         <!-- Empty state -->
         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -34,12 +46,12 @@
             </StackPanel.Style>
             <materialDesign:PackIcon Kind="FileDocumentOutline" Width="64" Height="64"
                                       HorizontalAlignment="Center"
-                                      Foreground="{DynamicResource MaterialDesignBodyLight}" />
+                                      Foreground="{StaticResource MutedTextBrush}" />
             <TextBlock Text="No documents uploaded" FontSize="16" HorizontalAlignment="Center"
-                       Margin="0,12,0,4" Foreground="{DynamicResource MaterialDesignBodyLight}" />
+                       Margin="0,12,0,4" Foreground="{StaticResource MutedTextBrush}" />
             <TextBlock Text="Upload a PDF or DOCX to get started" FontSize="13"
                        HorizontalAlignment="Center"
-                       Foreground="{DynamicResource MaterialDesignBodyLight}" />
+                       Foreground="{StaticResource MutedTextBrush}" />
         </StackPanel>
 
         <!-- Document list -->
@@ -47,28 +59,60 @@
             <ItemsControl ItemsSource="{Binding Documents}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <materialDesign:Card Margin="0,0,0,8" Padding="16" UniformCornerRadius="10">
+                        <Border Margin="0,0,0,8" Padding="16" CornerRadius="12"
+                                Background="{StaticResource PanelBgBrush}">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="8" ShadowDepth="0" Opacity="0" Color="#6C63FF" />
+                            </Border.Effect>
+                            <Border.Triggers>
+                                <EventTrigger RoutedEvent="MouseEnter">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="(Effect).(DropShadowEffect.Opacity)"
+                                                             To="0.25" Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                                <EventTrigger RoutedEvent="MouseLeave">
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="(Effect).(DropShadowEffect.Opacity)"
+                                                             To="0" Duration="0:0:0.2" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Border.Triggers>
                             <DockPanel>
                                 <!-- Actions on right -->
                                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Button 
-                                            Command="{Binding DataContext.OpenCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}" ToolTip="Open">
-                                        <materialDesign:PackIcon Kind="OpenInNew" />
+                                    <Button Command="{Binding DataContext.OpenCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}" ToolTip="Open" Cursor="Hand">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="Transparent" Padding="6">
+                                                    <materialDesign:PackIcon Kind="OpenInNew" Width="18" Height="18" Foreground="{StaticResource MutedTextBrush}" />
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
                                     </Button>
-                                    <Button 
-                                            Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                            CommandParameter="{Binding}" ToolTip="Delete">
-                                        <materialDesign:PackIcon Kind="Delete" Foreground="IndianRed" />
+                                    <Button Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                            CommandParameter="{Binding}" ToolTip="Delete" Cursor="Hand">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="Transparent" Padding="6">
+                                                    <materialDesign:PackIcon Kind="Delete" Width="18" Height="18" Foreground="#FF6B6B" />
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
                                     </Button>
                                 </StackPanel>
 
                                 <!-- File info -->
                                 <StackPanel VerticalAlignment="Center">
                                     <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="FilePdfBox" Width="20" Height="20"
+                                        <materialDesign:PackIcon Width="20" Height="20"
                                                                   VerticalAlignment="Center"
-                                                                  Foreground="{DynamicResource PrimaryHueMidBrush}">
+                                                                  Foreground="{StaticResource AccentGradientHorizontal}">
                                             <materialDesign:PackIcon.Style>
                                                 <Style TargetType="materialDesign:PackIcon">
                                                     <Setter Property="Kind" Value="FilePdfBox" />
@@ -81,16 +125,17 @@
                                             </materialDesign:PackIcon.Style>
                                         </materialDesign:PackIcon>
                                         <TextBlock Text="{Binding Filename}" FontSize="14" FontWeight="Medium"
-                                                   VerticalAlignment="Center" Margin="8,0,0,0" />
+                                                   VerticalAlignment="Center" Margin="8,0,0,0" Foreground="White" />
+                                        <!-- File type badge -->
+                                        <Border CornerRadius="999" Background="{StaticResource SurfaceBgBrush}"
+                                                Padding="8,2" Margin="8,0,0,0" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding FileType, Mode=OneWay}" FontSize="10"
+                                                       Foreground="{StaticResource MutedTextBrush}" />
+                                        </Border>
                                     </StackPanel>
-                                    <TextBlock FontSize="12" Margin="28,4,0,0"
-                                               Foreground="{DynamicResource MaterialDesignBodyLight}">
-                                        <Run Text="Type:" />
-                                        <Run Text="{Binding FileType, Mode=OneWay}" />
-                                    </TextBlock>
                                 </StackPanel>
                             </DockPanel>
-                        </materialDesign:Card>
+                        </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

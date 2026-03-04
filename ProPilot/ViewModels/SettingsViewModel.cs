@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.IO;
 using System.Windows.Input;
 using ProPilot.Helpers;
 using ProPilot.Models;
@@ -29,11 +31,13 @@ public class SettingsViewModel : ViewModelBase
     public string SaveStatus { get => _saveStatus; set => SetProperty(ref _saveStatus, value); }
     public bool IsTesting { get => _isTesting; set => SetProperty(ref _isTesting, value); }
     public bool ShowApiKey { get => _showApiKey; set => SetProperty(ref _showApiKey, value); }
+    public string DataFolderPath => _db.DataFolder;
 
     public ICommand SaveCommand { get; }
     public ICommand TestKeyCommand { get; }
     public ICommand ToggleKeyVisibilityCommand { get; }
     public ICommand ResetAllDataCommand { get; }
+    public ICommand OpenDataFolderCommand { get; }
 
     public SettingsViewModel(DatabaseService db, GeminiService gemini)
     {
@@ -44,6 +48,7 @@ public class SettingsViewModel : ViewModelBase
         TestKeyCommand = new RelayCommand(async _ => await TestKey());
         ToggleKeyVisibilityCommand = new RelayCommand(_ => ShowApiKey = !ShowApiKey);
         ResetAllDataCommand = new RelayCommand(_ => { }); // Confirmation handled in view
+        OpenDataFolderCommand = new RelayCommand(_ => OpenDataFolder());
 
         LoadProfile();
     }
@@ -89,6 +94,21 @@ public class SettingsViewModel : ViewModelBase
         var (success, message) = await _gemini.TestApiKeyAsync(ApiKey);
         TestResult = success ? "✅ " + message : "❌ " + message;
         IsTesting = false;
+    }
+
+    private void OpenDataFolder()
+    {
+        if (Directory.Exists(DataFolderPath))
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo(DataFolderPath) { UseShellExecute = true });
+            }
+            catch (Exception)
+            {
+                SaveStatus = "⚠️ Could not open data folder.";
+            }
+        }
     }
 
     public void ResetAllData()

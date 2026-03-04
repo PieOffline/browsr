@@ -18,9 +18,12 @@ public class ChatViewModel : ViewModelBase
     private Assignment? _selectedAssignment;
     private Document? _attachedDocument;
     private bool _showSessionList = true;
+    private ObservableCollection<Assignment> _linkedAssignments = new();
+    private ObservableCollection<Document> _attachedDocuments = new();
 
     public ObservableCollection<ChatSession> Sessions { get; } = new();
     public ObservableCollection<Message> Messages { get; } = new();
+    public ObservableCollection<Assignment> AvailableAssignments { get; } = new();
 
     public string MessageText { get => _messageText; set => SetProperty(ref _messageText, value); }
     public ChatSession? CurrentSession
@@ -36,6 +39,8 @@ public class ChatViewModel : ViewModelBase
     public Assignment? SelectedAssignment { get => _selectedAssignment; set => SetProperty(ref _selectedAssignment, value); }
     public Document? AttachedDocument { get => _attachedDocument; set => SetProperty(ref _attachedDocument, value); }
     public bool ShowSessionList { get => _showSessionList; set => SetProperty(ref _showSessionList, value); }
+    public ObservableCollection<Assignment> LinkedAssignments { get => _linkedAssignments; set => SetProperty(ref _linkedAssignments, value); }
+    public ObservableCollection<Document> AttachedDocuments { get => _attachedDocuments; set => SetProperty(ref _attachedDocuments, value); }
 
     public ICommand SendCommand { get; }
     public ICommand NewSessionCommand { get; }
@@ -43,6 +48,8 @@ public class ChatViewModel : ViewModelBase
     public ICommand ToggleSessionListCommand { get; }
     public ICommand ClearAttachmentCommand { get; }
     public ICommand ClearAssignmentCommand { get; }
+    public ICommand RemoveLinkedAssignmentCommand { get; }
+    public ICommand RemoveAttachedDocumentCommand { get; }
 
     public ChatViewModel(DatabaseService db, GeminiService gemini, DocumentService docService)
     {
@@ -56,8 +63,11 @@ public class ChatViewModel : ViewModelBase
         ToggleSessionListCommand = new RelayCommand(_ => ShowSessionList = !ShowSessionList);
         ClearAttachmentCommand = new RelayCommand(_ => AttachedDocument = null);
         ClearAssignmentCommand = new RelayCommand(_ => SelectedAssignment = null);
+        RemoveLinkedAssignmentCommand = new RelayCommand(p => { if (p is Assignment a) LinkedAssignments.Remove(a); });
+        RemoveAttachedDocumentCommand = new RelayCommand(p => { if (p is Document d) AttachedDocuments.Remove(d); });
 
         LoadSessions();
+        LoadAvailableAssignments();
     }
 
     public void LoadSessions()
@@ -65,6 +75,13 @@ public class ChatViewModel : ViewModelBase
         Sessions.Clear();
         foreach (var s in _db.GetChatSessions())
             Sessions.Add(s);
+    }
+
+    public void LoadAvailableAssignments()
+    {
+        AvailableAssignments.Clear();
+        foreach (var a in _db.GetAssignments())
+            AvailableAssignments.Add(a);
     }
 
     private void LoadMessages()
@@ -92,6 +109,18 @@ public class ChatViewModel : ViewModelBase
             Messages.Clear();
         }
         LoadSessions();
+    }
+
+    public void LinkAssignment(Assignment assignment)
+    {
+        if (!LinkedAssignments.Any(a => a.Id == assignment.Id))
+            LinkedAssignments.Add(assignment);
+    }
+
+    public void AttachDocument(Document document)
+    {
+        if (!AttachedDocuments.Any(d => d.Id == document.Id))
+            AttachedDocuments.Add(document);
     }
 
     private async Task SendMessage()
@@ -125,17 +154,42 @@ public class ChatViewModel : ViewModelBase
             .Select(m => (m.Role, m.Content))
             .ToList();
 
-        // Get AI response
-        var response = await _gemini.SendMessageAsync(prompt, history);
-
+        // Create placeholder AI message for streaming
         var aiMsg = new Message
         {
             SessionId = CurrentSession.Id,
             Role = "assistant",
-            Content = response
+            Content = ""
         };
-        _db.AddMessage(aiMsg);
         Messages.Add(aiMsg);
+
+        // Stream AI response
+        var fullResponse = new System.Text.StringBuilder();
+        await _gemini.SendMessageStreamAsync(prompt, history,
+            chunk =>
+            {
+                fullResponse.Append(chunk);
+                // Update message content on UI thread
+                System.Windows.Application.Current?.Dispatcher.Invoke(() =>
+                {
+                    aiMsg.Content = fullResponse.ToString();
+                    // Trigger property changed on the message
+                    var idx = Messages.IndexOf(aiMsg);
+                    if (idx >= 0)
+                    {
+                        Messages.RemoveAt(idx);
+                        Messages.Insert(idx, aiMsg);
+                    }
+                });
+            },
+            () =>
+            {
+                System.Windows.Application.Current?.Dispatcher.Invoke(() =>
+                {
+                    aiMsg.Content = fullResponse.ToString();
+                    _db.AddMessage(aiMsg);
+                });
+            });
 
         // Auto-generate title if this is the first exchange
         if (Messages.Count <= 2 && CurrentSession.Title == "New Chat")
@@ -150,6 +204,8 @@ public class ChatViewModel : ViewModelBase
         // Clear attachments after sending
         SelectedAssignment = null;
         AttachedDocument = null;
+        LinkedAssignments.Clear();
+        AttachedDocuments.Clear();
         IsSending = false;
     }
 
@@ -167,7 +223,7 @@ public class ChatViewModel : ViewModelBase
             sb.AppendLine();
         }
 
-        // Referenced assignment
+        // Referenced assignments (legacy single + new multi)
         if (SelectedAssignment != null)
         {
             sb.AppendLine("## Referenced Assignment");
@@ -180,11 +236,30 @@ public class ChatViewModel : ViewModelBase
             sb.AppendLine();
         }
 
-        // Attached document
+        foreach (var assignment in LinkedAssignments)
+        {
+            sb.AppendLine($"## Linked Assignment: {assignment.Title}");
+            sb.AppendLine($"Subject: {assignment.Subject}");
+            sb.AppendLine($"Class: {assignment.ClassName}");
+            sb.AppendLine($"Description: {assignment.Description}");
+            sb.AppendLine($"Brief: {assignment.Brief}");
+            sb.AppendLine($"Deadline: {assignment.Deadline}");
+            sb.AppendLine();
+        }
+
+        // Attached documents
         if (AttachedDocument != null)
         {
             sb.AppendLine("## Attached Document Content");
             var text = _docService.ExtractText(AttachedDocument.FilePath);
+            sb.AppendLine(text);
+            sb.AppendLine();
+        }
+
+        foreach (var doc in AttachedDocuments)
+        {
+            sb.AppendLine($"## Attached Document: {doc.Filename}");
+            var text = _docService.ExtractText(doc.FilePath);
             sb.AppendLine(text);
             sb.AppendLine();
         }

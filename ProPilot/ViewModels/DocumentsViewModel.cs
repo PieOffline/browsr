@@ -50,19 +50,17 @@ public class DocumentsViewModel : ViewModelBase
         var ext = Path.GetExtension(filePath).ToLowerInvariant();
         if (ext != ".pdf" && ext != ".docx") return;
 
-        // Copy to app data
-        var appData = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "ProPilot", "Documents");
-        Directory.CreateDirectory(appData);
-        var destPath = Path.Combine(appData, Path.GetFileName(filePath));
+        // Copy to app data folder
+        var docsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data", "Documents");
+        Directory.CreateDirectory(docsFolder);
+        var destPath = Path.Combine(docsFolder, Path.GetFileName(filePath));
 
         // Handle duplicate names
         var counter = 1;
         while (File.Exists(destPath))
         {
             var nameWithoutExt = Path.GetFileNameWithoutExtension(filePath);
-            destPath = Path.Combine(appData, $"{nameWithoutExt}_{counter}{ext}");
+            destPath = Path.Combine(docsFolder, $"{nameWithoutExt}_{counter}{ext}");
             counter++;
         }
 

@@ -34,3 +34,6 @@ project.lock.json
 ## OS
 .DS_Store
 Thumbs.db
+
+## App data
+data/

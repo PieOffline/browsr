@@ -6,8 +6,31 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <materialDesign:BundledTheme BaseTheme="Dark" PrimaryColor="Teal" SecondaryColor="Cyan" />
+                <materialDesign:BundledTheme BaseTheme="Dark" PrimaryColor="DeepPurple" SecondaryColor="Purple" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Custom colour palette -->
+            <Color x:Key="BaseBg">#1A1A2E</Color>
+            <Color x:Key="PanelBg">#16213E</Color>
+            <Color x:Key="SurfaceBg">#0F3460</Color>
+            <Color x:Key="AccentStart">#6C63FF</Color>
+            <Color x:Key="AccentEnd">#A78BFA</Color>
+            <Color x:Key="MutedText">#AAAAAA</Color>
+
+            <SolidColorBrush x:Key="BaseBgBrush" Color="{StaticResource BaseBg}" />
+            <SolidColorBrush x:Key="PanelBgBrush" Color="{StaticResource PanelBg}" />
+            <SolidColorBrush x:Key="SurfaceBgBrush" Color="{StaticResource SurfaceBg}" />
+            <SolidColorBrush x:Key="MutedTextBrush" Color="{StaticResource MutedText}" />
+
+            <LinearGradientBrush x:Key="AccentGradient" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="{StaticResource AccentStart}" Offset="0" />
+                <GradientStop Color="{StaticResource AccentEnd}" Offset="1" />
+            </LinearGradientBrush>
+
+            <LinearGradientBrush x:Key="AccentGradientHorizontal" StartPoint="0,0.5" EndPoint="1,0.5">
+                <GradientStop Color="{StaticResource AccentStart}" Offset="0" />
+                <GradientStop Color="{StaticResource AccentEnd}" Offset="1" />
+            </LinearGradientBrush>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -8,7 +8,8 @@ public class GeminiService
 {
     private readonly HttpClient _httpClient = new();
     private string _apiKey = string.Empty;
-    private const string BaseUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent";
+    private const string BaseUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
+    private const string StreamUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:streamGenerateContent";
 
     public void SetApiKey(string apiKey)
     {
@@ -100,6 +101,100 @@ public class GeminiService
         catch (Exception ex)
         {
             return $"⚠️ Error: {ex.Message}";
+        }
+    }
+
+    /// <summary>
+    /// Send a streamed message using SSE and invoke a callback for each text chunk.
+    /// </summary>
+    public async Task SendMessageStreamAsync(string prompt, List<(string role, string content)>? history, Action<string> onChunk, Action onDone)
+    {
+        try
+        {
+            var url = $"{StreamUrl}?alt=sse&key={_apiKey}";
+            var contents = new List<object>();
+
+            if (history != null)
+            {
+                foreach (var (role, content) in history)
+                {
+                    contents.Add(new
+                    {
+                        role = role == "assistant" ? "model" : "user",
+                        parts = new object[] { new { text = content } }
+                    });
+                }
+            }
+
+            contents.Add(new
+            {
+                role = "user",
+                parts = new object[] { new { text = prompt } }
+            });
+
+            var payload = new { contents };
+            var json = JsonSerializer.Serialize(payload);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, url)
+            {
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
+            };
+
+            using var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorBody = await response.Content.ReadAsStringAsync();
+                onChunk($"⚠️ API Error ({response.StatusCode}): {errorBody}");
+                onDone();
+                return;
+            }
+
+            using var stream = await response.Content.ReadAsStreamAsync();
+            using var reader = new System.IO.StreamReader(stream);
+
+            while (!reader.EndOfStream)
+            {
+                var line = await reader.ReadLineAsync();
+                if (line == null) continue;
+
+                if (line.StartsWith("data: "))
+                {
+                    var data = line["data: ".Length..];
+                    if (data == "[DONE]")
+                    {
+                        onDone();
+                        return;
+                    }
+
+                    try
+                    {
+                        using var doc = JsonDocument.Parse(data);
+                        var candidates = doc.RootElement.GetProperty("candidates");
+                        if (candidates.GetArrayLength() > 0)
+                        {
+                            var parts = candidates[0].GetProperty("content").GetProperty("parts");
+                            if (parts.GetArrayLength() > 0)
+                            {
+                                var text = parts[0].GetProperty("text").GetString();
+                                if (!string.IsNullOrEmpty(text))
+                                    onChunk(text);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        // Skip malformed SSE data
+                    }
+                }
+            }
+
+            onDone();
+        }
+        catch (Exception ex)
+        {
+            onChunk($"⚠️ Error: {ex.Message}");
+            onDone();
         }
     }
 
