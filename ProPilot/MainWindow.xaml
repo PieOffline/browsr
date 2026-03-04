@@ -3,10 +3,113 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ProPilot"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:vm="clr-namespace:ProPilot.ViewModels"
+        xmlns:views="clr-namespace:ProPilot.Views"
+        xmlns:converters="clr-namespace:ProPilot.Converters"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="ProPilot"
+        Height="700" Width="1100"
+        MinHeight="550" MinWidth="800"
+        WindowStartupLocation="CenterScreen"
+        Background="{DynamicResource MaterialDesignPaper}"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontFamily="{materialDesign:MaterialDesignFont}">
 
+    <Window.Resources>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVis" />
+        <converters:InverseBoolConverter x:Key="InverseBool" />
+
+        <!-- DataTemplate mapping ViewModels to Views -->
+        <DataTemplate DataType="{x:Type vm:ChatViewModel}">
+            <views:ChatView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:AssignmentsViewModel}">
+            <views:AssignmentsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:DocumentsViewModel}">
+            <views:DocumentsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
+            <views:SettingsView />
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <!-- Onboarding overlay -->
+        <views:OnboardingView DataContext="{Binding OnboardingVm}"
+                              Visibility="{Binding DataContext.ShowOnboarding, RelativeSource={RelativeSource AncestorType=Window}, Converter={StaticResource BoolToVis}}"
+                              Panel.ZIndex="100" />
+
+        <!-- Main app layout -->
+        <Grid Visibility="{Binding ShowOnboarding, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}">
+            <!-- This grid uses the InverseBoolConverter trick via a style; simpler: just bind inversely -->
+            <Grid.Style>
+                <Style TargetType="Grid">
+                    <Setter Property="Visibility" Value="Visible" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ShowOnboarding}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Grid.Style>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="64" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Sidebar -->
+            <Border Grid.Column="0" Background="{DynamicResource MaterialDesignCardBackground}" BorderThickness="0,0,1,0"
+                    BorderBrush="{DynamicResource MaterialDesignDivider}">
+                <DockPanel>
+                    <!-- App icon at top -->
+                    <StackPanel DockPanel.Dock="Top" Margin="0,16,0,8">
+                        <materialDesign:PackIcon Kind="RobotHappy" Width="32" Height="32"
+                                                  HorizontalAlignment="Center"
+                                                  Foreground="{DynamicResource PrimaryHueMidBrush}" />
+                        <TextBlock Text="ProPilot" FontSize="8" HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource PrimaryHueMidBrush}" Margin="0,4,0,0" />
+                    </StackPanel>
+
+                    <!-- Settings at bottom -->
+                    <Button DockPanel.Dock="Bottom" Style="{StaticResource MaterialDesignIconButton}"
+                            Command="{Binding NavigateSettingsCommand}" Margin="0,0,0,12"
+                            ToolTip="Settings">
+                        <materialDesign:PackIcon Kind="Cog" Width="24" Height="24" />
+                    </Button>
+
+                    <!-- Navigation buttons -->
+                    <StackPanel VerticalAlignment="Top" Margin="0,8,0,0">
+                        <Button Style="{StaticResource MaterialDesignIconButton}"
+                                Command="{Binding NavigateChatCommand}" ToolTip="Chat" Margin="0,4">
+                            <materialDesign:PackIcon Kind="Chat" Width="24" Height="24" />
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignIconButton}"
+                                Command="{Binding NavigateAssignmentsCommand}" ToolTip="Assignments" Margin="0,4">
+                            <materialDesign:PackIcon Kind="ClipboardText" Width="24" Height="24" />
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignIconButton}"
+                                Command="{Binding NavigateDocumentsCommand}" ToolTip="Documents" Margin="0,4">
+                            <materialDesign:PackIcon Kind="FileDocument" Width="24" Height="24" />
+                        </Button>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <!-- Main content area -->
+            <DockPanel Grid.Column="1">
+                <!-- Top bar -->
+                <Border DockPanel.Dock="Top" Padding="20,12" Background="{DynamicResource MaterialDesignCardBackground}"
+                        BorderThickness="0,0,0,1" BorderBrush="{DynamicResource MaterialDesignDivider}">
+                    <TextBlock Text="{Binding CurrentViewTitle}" FontSize="20" FontWeight="Medium"
+                               Foreground="{DynamicResource MaterialDesignBody}" />
+                </Border>
+
+                <!-- Content -->
+                <ContentControl Content="{Binding CurrentView}" Margin="0" />
+            </DockPanel>
+        </Grid>
     </Grid>
 </Window>
